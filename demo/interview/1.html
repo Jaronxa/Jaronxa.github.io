@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>使用面向对象的方式维护一个列表</title>
+    <style>
+        ul {
+            padding: 0;
+        }
+        li {
+            list-style: none;
+        }
+        .list-delete {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        /**
+         * 属性：总行数、当前列表
+         * 功能：新增列表、删除列表
+        */
+        class ListPainter {
+            constructor(line) {
+                this.list = []
+                this.line = line
+                if(this.line > 0) {
+                    this.draw()
+                }
+            }
+            draw() {
+                // 考虑到性能问题，使用fragment api 创建list
+                let frag = document.createDocumentFragment()
+                let ul = document.createElement('ul')
+                for(let i = 0; i < this.line; i++) {
+                    let li = document.createElement('li')
+                    li.innerHTML = `<input class="form-input" value="${i}"/><span class="list-delete">&times;</span>`
+                    this.list.push(li)
+                    frag.appendChild(li)
+                }
+                ul.appendChild(frag)
+                this.bindEvent(ul, 'list-delete')
+                document.body.appendChild(ul)
+            }
+            bindEvent(elem, selector) {
+                if(elem == null) {
+                    return
+                }
+                elem.addEventListener('click', (e)=> {
+                    if(e.target.className === selector) {
+                        let target = e.target.parentNode
+                        let index = this.list.indexOf(target)
+                        this.remove(elem, index, target)
+                    }
+                })
+            }
+            add() {
+                let li = document.createElement('li')
+                li.innerHTML = `<input class="form-input" value=""/><span class="list-delete">&times;</span>`
+            }
+            remove(elem, index, target) {
+                this.list.splice(index, 1)
+                elem.removeChild(target)
+            }
+        }
+        new ListPainter(10)
+    </script>
+</body>
+</html>
